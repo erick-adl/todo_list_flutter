@@ -15,21 +15,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  
   final _todoController = new TextEditingController();
   List _toDoList = [];
 
   @override
   void initState() {
     super.initState();
-    
-    _readData().then((onValue){
+
+    _readData().then((onValue) {
       setState(() {
         _toDoList = json.decode(onValue);
       });
     });
   }
-  
 
   void _addTodo() {
     setState(() {
@@ -47,7 +45,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Todo List"),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.green,
         centerTitle: true,
       ),
       body: Column(
@@ -61,11 +59,11 @@ class _HomeState extends State<Home> {
                     controller: _todoController,
                     decoration: InputDecoration(
                         labelText: "New To Do",
-                        labelStyle: TextStyle(color: Colors.blueAccent)),
+                        labelStyle: TextStyle(color: Colors.green)),
                   ),
                 ),
                 RaisedButton(
-                  color: Colors.blueAccent,
+                  color: Colors.green,
                   child: Text("Add"),
                   textColor: Colors.white,
                   onPressed: _addTodo,
@@ -77,26 +75,42 @@ class _HomeState extends State<Home> {
             child: ListView.builder(
               padding: EdgeInsets.only(top: 10.0),
               itemCount: _toDoList.length,
-              itemBuilder: (contex, index) {
-                return CheckboxListTile(
-                  title: Text(_toDoList[index]["title"]),
-                  value: _toDoList[index]["ok"],
-                  secondary: CircleAvatar(
-                    child: Icon(
-                        _toDoList[index]["ok"] ? Icons.check : Icons.error),
-                  ),
-                  onChanged: (bool value) {
-                    setState(() {
-                      _toDoList[index]["ok"] = value;
-                      _saveData();
-                    });
-                  },
-                );
-              },
+              itemBuilder: buildItem,
             ),
           )
         ],
       ),
+    );
+  }
+
+  Widget buildItem(contex, index) {
+    return Dismissible(
+      background: Container(
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment(-0.9, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      direction: DismissDirection.startToEnd,
+      child: CheckboxListTile(
+        title: Text(_toDoList[index]["title"]),
+        value: _toDoList[index]["ok"],
+        secondary: CircleAvatar(
+          child: Icon(_toDoList[index]["ok"] ? Icons.check : Icons.error),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+        ),
+        onChanged: (bool value) {
+          setState(() {
+            _toDoList[index]["ok"] = value;
+            _saveData();
+          });
+        },
+      ), key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
     );
   }
 
@@ -120,5 +134,3 @@ class _HomeState extends State<Home> {
     }
   }
 }
-
-
